@@ -1,0 +1,17 @@
+FROM node:24.15.0-bookworm-slim AS build
+WORKDIR /app
+COPY package.json package-lock.json .npmrc ./
+RUN npm ci
+COPY . .
+RUN npm run build:independent
+
+FROM node:24.15.0-bookworm-slim
+ENV NODE_ENV=production HOST=0.0.0.0 PORT=8080 DATA_DIR=/data
+WORKDIR /app
+COPY --from=build /app/standalone-dist ./standalone-dist
+COPY standalone/server.mjs ./standalone/server.mjs
+COPY lib/catalog.ts lib/domain.mjs ./lib/
+RUN mkdir /data && chown node:node /data
+USER node
+EXPOSE 8080
+CMD ["node", "standalone/server.mjs"]

@@ -1,0 +1,366 @@
+:root {
+  --background: #f5f7fa;
+  --foreground: #1b2941;
+  --sidebar: #14213b;
+  --sidebar-foreground: #f1f5ff;
+  --sidebar-accent: #263957;
+  --sidebar-accent-foreground: #fff;
+  --sidebar-border: #263957;
+  --primary: #315cdd;
+}
+:is(.study-sidebar, [data-mobile="true"]) {
+  color: #f1f5ff;
+}
+:is(.study-sidebar, [data-mobile="true"]) [data-slot="sidebar-inner"] {
+  background: #14213b;
+}
+:is(.study-sidebar, [data-mobile="true"]) .brand {
+  font-size: 19px;
+  color: #fff;
+  padding: 28px 12px;
+}
+:is(.study-sidebar, [data-mobile="true"]) .brand-symbol {
+  background: #426cef;
+  border-radius: 10px;
+}
+:is(.study-sidebar, [data-mobile="true"]) .brand small {
+  display: none;
+}
+:is(.study-sidebar, [data-mobile="true"]) .side-label {
+  color: #8d9bb5;
+  font-size: 13px;
+  letter-spacing: 0;
+}
+:is(.study-sidebar, [data-mobile="true"]) [data-slot="sidebar-menu-button"] {
+  color: #c2cde1;
+  height: 46px;
+}
+:is(.study-sidebar, [data-mobile="true"])
+  [data-slot="sidebar-menu-button"][data-active="true"] {
+  background: #2a4166;
+  color: #fff;
+}
+:is(.study-sidebar, [data-mobile="true"]) .side-note {
+  display: none;
+}
+:is(.study-sidebar, [data-mobile="true"]) .personal {
+  border-color: #30415c;
+  color: #fff;
+}
+:is(.study-sidebar, [data-mobile="true"]) .personal small {
+  color: #abb8d0;
+}
+:is(.study-sidebar, [data-mobile="true"]) .avatar {
+  background: #314667;
+  color: #fff;
+}
+.topbar {
+  height: 64px;
+  padding: 0 32px;
+}
+.main-content {
+  max-width: 1320px;
+  padding: 30px 36px;
+  margin: 0 auto;
+}
+.page-heading {
+  margin-bottom: 24px;
+}
+.page-heading h1 {
+  font-size: 28px;
+}
+.page-heading .eyebrow {
+  display: none;
+}
+.page-heading p:not(.eyebrow) {
+  margin-top: 6px;
+  font-size: 15px;
+}
+.stats-grid {
+  padding: 20px 0;
+  margin-bottom: 24px;
+  border-radius: 12px;
+}
+.stat strong {
+  font-size: 30px;
+}
+.practice-grid {
+  gap: 16px;
+}
+.practice-card,
+.practice-card.reading,
+.practice-card.writing {
+  background: #fff;
+  border-color: #e2e7ef;
+  color: #1b2941;
+  padding: 22px 22px 0;
+  border-radius: 12px;
+}
+.practice-card .card-top {
+  margin-bottom: 16px;
+}
+.practice-card .card-top > svg {
+  color: #315cdd;
+  background: #edf2ff;
+  box-sizing: content-box;
+  padding: 12px;
+  border-radius: 12px;
+}
+.practice-card.reading .card-top > svg {
+  color: #057b76;
+  background: #e9f7f5;
+}
+.practice-card.writing .card-top > svg {
+  color: #a45d12;
+  background: #fff3e4;
+}
+.practice-card .card-top > span {
+  font-family: inherit;
+  font-size: 22px;
+  font-style: normal;
+  color: #718096;
+  opacity: 0.4;
+}
+.practice-card .eyebrow {
+  display: none;
+}
+.practice-card h3 {
+  font-size: 23px;
+}
+.practice-card h3 > svg {
+  display: none;
+}
+.practice-card .card-bottom {
+  font-size: 14px;
+  margin-top: 18px;
+  border-color: #edf0f5;
+}
+.practice-card:hover {
+  border-color: #93adf1;
+  box-shadow: 0 5px 20px #18345b0a;
+}
+.continue-banner {
+  background: #14213b;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+.continue-banner .eyebrow {
+  color: #b9c9e9;
+}
+.continue-banner .button {
+  background: #fff;
+  color: #244baf;
+  border-color: #fff;
+}
+.bottom-grid {
+  margin-top: 20px;
+}
+.vocab-banner .eyebrow {
+  display: none;
+}
+.source-panel {
+  background: transparent;
+  border: none;
+  font-size: 14px;
+}
+.source-panel h3 {
+  font-size: 16px;
+}
+.cloud-label {
+  font-size: 14px;
+}
+.logout-button {
+  color: #bac8e1;
+  width: 100%;
+  text-align: left;
+  padding: 10px 16px;
+  font-size: 14px;
+}
+.logout-button:hover {
+  color: #fff;
+  background: #263957;
+}
+.notice {
+  font-size: 14px;
+}
+.book-card {
+  border-radius: 12px;
+}
+.book-card h2 {
+  font-size: 18px;
+}
+.book-card p {
+  min-height: 60px;
+}
+footer {
+  font-size: 12px;
+}
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 44% 56%;
+  background: #fff;
+}
+.login-intro {
+  background: #14213b;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px 12%;
+  position: relative;
+  overflow: hidden;
+}
+.login-intro:after {
+  content: "";
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  border: 1px solid #ffffff12;
+  border-radius: 50%;
+  right: -180px;
+  bottom: 90px;
+  box-shadow:
+    0 0 0 65px #ffffff04,
+    0 0 0 130px #ffffff03;
+  pointer-events: none;
+}
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 20px;
+  font-weight: 700;
+}
+.login-kicker {
+  color: #98b2ee;
+  font-size: 14px;
+  letter-spacing: 3px;
+}
+.login-intro h1 {
+  font-size: clamp(32px, 3.3vw, 48px);
+  font-weight: 600;
+  line-height: 1.5;
+  margin: 18px 0;
+}
+.login-intro p {
+  color: #b3c1da;
+  font-size: 16px;
+}
+.login-intro small {
+  color: #9baac3;
+  font-size: 14px;
+}
+.login-panel {
+  display: grid;
+  place-items: center;
+  padding: 48px 28px;
+}
+.login-form-wrap {
+  width: 100%;
+  max-width: 370px;
+}
+.login-icon {
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  background: #edf2ff;
+  color: #315cdd;
+  border-radius: 14px;
+  margin-bottom: 24px;
+}
+.login-form-wrap h2 {
+  font-size: 28px;
+  font-weight: 700;
+}
+.login-subtitle {
+  color: #718096;
+  margin: 8px 0 30px;
+}
+.login-form-wrap .word-form {
+  gap: 20px;
+}
+.login-form-wrap input:not([type="checkbox"]) {
+  height: 49px;
+  background: #fff;
+  border: 1px solid #d9e0eb;
+  font-size: 16px;
+  border-radius: 8px;
+}
+.login-form-wrap .remember {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #637086;
+}
+.remember input {
+  width: 16px;
+  height: 16px;
+  accent-color: #315cdd;
+}
+.login-submit {
+  width: 100%;
+  height: 49px;
+  justify-content: space-between;
+}
+.login-foot {
+  margin-top: 28px;
+  color: #8994a5;
+  font-size: 13px;
+  text-align: center;
+}
+@media (max-width: 767px) {
+  .main-content {
+    padding: 24px 18px;
+  }
+  .topbar {
+    padding: 0 18px;
+  }
+  .login-page {
+    display: block;
+  }
+  .login-intro {
+    padding: 24px;
+  }
+  .login-intro > div:not(.login-brand),
+  .login-intro > small {
+    display: none;
+  }
+  .login-panel {
+    padding: 40px 24px;
+  }
+  .login-brand {
+    font-size: 18px;
+  }
+  .practice-grid {
+    grid-template-columns: 1fr;
+  }
+  .practice-card {
+    padding-top: 18px;
+  }
+  .practice-card .card-top {
+    float: left;
+    margin: 0 16px 0 0;
+  }
+  .practice-card .card-top > span {
+    display: none;
+  }
+  .practice-card .card-bottom {
+    clear: both;
+  }
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .page-heading h1 {
+    font-size: 25px;
+  }
+  .cloud-label {
+    font-size: 12px;
+  }
+}

@@ -1,0 +1,16 @@
+services:
+  study:
+    build:
+      context: .
+      dockerfile: Dockerfile.independent
+    restart: unless-stopped
+    environment:
+      APP_ORIGIN: ${APP_ORIGIN:?Set HTTPS origin}
+      STUDY_USERNAME: ${STUDY_USERNAME:?Set personal username}
+      STUDY_INITIAL_PASSWORD: ${STUDY_INITIAL_PASSWORD:-}
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - study-data:/data
+volumes:
+  study-data:

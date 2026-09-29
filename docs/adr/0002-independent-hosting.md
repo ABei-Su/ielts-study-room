@@ -1,0 +1,11 @@
+# Independent personal website
+
+Accepted requirement: the owner needs an independent URL with ordinary username/password login, shared phone/desktop records, and no dependency on ChatGPT authentication. The current host blocks the user's requests before app rendering. Deployment destination is pending user input.
+
+Add a separate portable Node 24 server and Vite client build using the existing study components, catalog and domain functions. Keep the deployed Sites API and D1 data untouched. SQLite on a persistent server volume becomes authoritative only for the independent deployment. One provisioned account; no public registration, default password or reset email service. Initial password is supplied through the host's secret settings, hashed with scrypt; random session tokens are stored only as hashes. Use HttpOnly, SameSite=Strict and HTTPS Secure cookies, same-origin writes, login throttling, expiry and logout revocation.
+
+Authentication states: signed-out -> authenticating -> signed-in; invalid credentials return signed-out, timeout stays retryable, expiration/logout revoke access. Study transitions retain version/event/CAS checks and immutable submissions. SQLite transactions commit record data and revision atomically. Conflicts return 409; no silent overwrite. Persistence survives restarts. Old D1 records are not automatically migrated or erased.
+
+Visual direction: compact white workspace with a dark ink navigation rail, restrained blue actions, three clear subject cards and a prominent resume action. Remove decorative slogans and redundant English labels. Reference the focus and vocabulary practice ideas in QWERTY Learner (https://github.com/RealKai42/qwerty-learner) and clear study sets in Scholarsome (https://github.com/hwgilbert16/scholarsome); no code or assets copied.
+
+Validation: integration tests for password failures/success, cookie flags, CSRF, throttling, expiry/logout, two clients sharing records, conflicts, immutable submission and restart persistence; existing domain/type/lint/build checks; visual desktop/mobile review. Deployment requires a user-controlled host and HTTPS URL; never represent localhost or the blocked Sites URL as the new service.

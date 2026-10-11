@@ -12,7 +12,13 @@ const commands = [
     "standalone",
     "scripts/verify.mjs",
   ],
-  ["--test", "tests/domain.test.mjs", "tests/independent.test.mjs"],
+  [
+    "--test",
+    "tests/domain.test.mjs",
+    "tests/independent.test.mjs",
+    "tests/study-view.test.mjs",
+    "tests/catalog.test.mjs",
+  ],
   ["node_modules/typescript/bin/tsc", "--noEmit"],
   [
     "node_modules/eslint/bin/eslint.js",

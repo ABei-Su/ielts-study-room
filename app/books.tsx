@@ -1,4 +1,5 @@
 import { BookOpen, BookmarkPlus } from "lucide-react";
+import { exercises } from "@/lib/catalog";
 
 const books = [
   {
@@ -64,7 +65,8 @@ export default function Books({
           <strong>现在就可以记录书里的生词</strong>
           <p>
             添加生词时填写“教材 / 章节 /
-            页码”，来源会与单词一起保存到云端。完整题目接入前，可继续使用站内 15
+            页码”，来源会与单词一起保存到云端。完整题目接入前，可继续使用站内{" "}
+            {exercises.length}
             组官方样题。
           </p>
         </div>

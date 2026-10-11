@@ -23,6 +23,7 @@ import {
 import { exercises, officialSource, type Exercise } from "@/lib/catalog";
 import type { StudyRecord, SessionData } from "@/lib/types";
 import { wordCount } from "@/lib/domain.mjs";
+import { exerciseProgress, matchesExercise } from "@/lib/study-view.mjs";
 import { downloadText, type Persist } from "./use-records";
 export function ExerciseList({
   kind,
@@ -35,6 +36,17 @@ export function ExerciseList({
   onStart: (exercise: Exercise, record?: StudyRecord) => void;
   enabled: boolean;
 }) {
+  const [filter, setFilter] = useState("all");
+  const [query, setQuery] = useState("");
+  const [questionType, setQuestionType] = useState("all");
+  const items = exercises
+    .filter((e) => e.kind === kind)
+    .map((e) => ({ e, ...exerciseProgress(records, e.id) }));
+  const visible = items.filter(
+    (item) =>
+      (filter === "all" || item.state === filter) &&
+      matchesExercise(item.e, query, questionType),
+  );
   return (
     <>
       <div className="notice source-notice">
@@ -46,57 +58,108 @@ export function ExerciseList({
           核验来源 <ExternalLink size={14} />
         </a>
       </div>
-      <div className="exercise-grid">
-        {exercises
-          .filter((e) => e.kind === kind)
-          .map((e) => {
-            const draft = records.find(
-              (r) =>
-                r.kind === "session" &&
-                (r.data as SessionData).exerciseId === e.id &&
-                (r.data as SessionData).status === "draft",
-            );
-            const completed = records.filter(
-              (r) =>
-                r.kind === "session" &&
-                (r.data as SessionData).exerciseId === e.id &&
-                (r.data as SessionData).status === "submitted",
-            ).length;
-            return (
-              <article className="exercise-card" key={e.id}>
-                <div className="row">
-                  <span className="tag">IELTS 官方样题</span>
-                  <span className="muted">
-                    {e.minWords
-                      ? `${e.minWords}+ 词`
-                      : `${e.answers.length} 道题`}
-                  </span>
-                </div>
-                <h3>{e.title}</h3>
-                <p>{e.subtitle}</p>
-                <p className="exercise-detail">
-                  {e.type} · {e.minutes} 分钟
-                  {e.kind !== "writing" ? "（练习建议时长）" : ""}
-                </p>
-                <div className="card-bottom">
-                  <span>
-                    {draft
-                      ? "有未完成练习"
-                      : completed
-                        ? `已练习 ${completed} 次`
-                        : "尚未开始"}
-                  </span>
-                  <button
-                    disabled={!enabled}
-                    className="button small"
-                    onClick={() => onStart(e, draft)}
-                  >
-                    {draft ? "继续练习" : "开始练习"}
-                  </button>
-                </div>
-              </article>
-            );
-          })}
+      <div className="library-search">
+        <label>
+          搜索练习
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="搜索主题、标题或题型…"
+          />
+        </label>
+        <label>
+          题型
+          <select
+            value={questionType}
+            onChange={(e) => setQuestionType(e.target.value)}
+          >
+            <option value="all">全部题型</option>
+            {[...new Set(items.map((item) => item.e.type))].map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+      <div className="library-filters" role="group" aria-label="按学习进度筛选">
+        {[
+          ["all", "全部练习"],
+          ["draft", "继续学习"],
+          ["new", "尚未开始"],
+          ["completed", "已完成"],
+        ].map(([value, label]) => (
+          <button
+            key={value}
+            aria-pressed={filter === value}
+            onClick={() => setFilter(value)}
+          >
+            {label}{" "}
+            <span>
+              {
+                items.filter((item) => value === "all" || item.state === value)
+                  .length
+              }
+            </span>
+          </button>
+        ))}
+      </div>
+      <p className="muted" aria-live="polite">
+        共 {visible.length} 组练习 · 选择一组，开始专注学习
+      </p>
+      <div className="exercise-grid study-library">
+        {visible.map(({ e, draft, completed }) => {
+          return (
+            <article className="exercise-card" key={e.id}>
+              <div className="row">
+                <span className="tag">IELTS 官方样题</span>
+                <span className="muted">
+                  {e.minWords
+                    ? `${e.minWords}+ 词`
+                    : `${e.answers.length} 道题`}
+                </span>
+              </div>
+              <h3>{e.title}</h3>
+              <p>{e.subtitle}</p>
+              <p className="exercise-detail">
+                {e.type} · {e.minutes} 分钟
+                {e.kind !== "writing" ? "（练习建议时长）" : ""}
+              </p>
+              <div className="card-bottom">
+                <span>
+                  {draft
+                    ? "有未完成练习"
+                    : completed
+                      ? `已练习 ${completed} 次`
+                      : "尚未开始"}
+                </span>
+                <button
+                  disabled={!enabled}
+                  className="button small"
+                  onClick={() => onStart(e, draft)}
+                >
+                  {draft ? "继续练习" : "开始练习"}
+                </button>
+              </div>
+            </article>
+          );
+        })}
+        {visible.length === 0 && (
+          <div className="library-empty">
+            <p>没有符合条件的练习。</p>
+            <button
+              className="text-button"
+              onClick={() => {
+                setFilter("all");
+                setQuery("");
+                setQuestionType("all");
+              }}
+            >
+              清除筛选，查看全部练习
+            </button>
+          </div>
+        )}
       </div>
     </>
   );
@@ -470,11 +533,14 @@ export default function Practice({
                 <TabsTrigger value="key">
                   {exercise.kind === "writing" ? "范文与点评" : "参考答案"}
                 </TabsTrigger>
+                {exercise.transcriptPage && (
+                  <TabsTrigger value="transcript">录音原文</TabsTrigger>
+                )}
               </TabsList>
               <a
                 href={
                   exercise.pdf +
-                  `#page=${preview === "task" ? exercise.page : exercise.keyPage}`
+                  `#page=${preview === "task" ? exercise.page : preview === "transcript" ? exercise.transcriptPage : exercise.keyPage}`
                 }
                 target="_blank"
                 rel="noreferrer"
@@ -496,6 +562,17 @@ export default function Practice({
                 className="paper-frame"
               />
             </TabsContent>
+            {exercise.transcriptPage && (
+              <TabsContent value="transcript">
+                <iframe
+                  title="官方听力录音原文 PDF"
+                  src={
+                    exercise.pdf + `#page=${exercise.transcriptPage}&view=FitH`
+                  }
+                  className="paper-frame"
+                />
+              </TabsContent>
+            )}
           </Tabs>
           <p className="paper-note">
             题面直接来自官方
@@ -509,6 +586,9 @@ export default function Practice({
               <BookmarkPlus size={16} /> 记生词
             </button>
           </div>
+          {exercise.instruction && (
+            <p className="answer-instruction">{exercise.instruction}</p>
+          )}
           {exercise.kind === "writing" ? (
             <>
               <div className="writing-meta">
@@ -529,6 +609,20 @@ export default function Practice({
               <p className="muted">
                 字数仅作练习参考；请对照官方评分维度复盘。
               </p>
+              <details className="writing-checklist">
+                <summary>写完后，做一次自查</summary>
+                <ul>
+                  <li>
+                    {exercise.minWords === 150
+                      ? "是否概括主要趋势或阶段，并选择关键数据作比较？"
+                      : "是否回应题目的所有要求，并用解释和例子支持观点？"}
+                  </li>
+                  <li>段落是否围绕一个中心，衔接是否自然？</li>
+                  <li>用词是否准确，是否检查拼写和搭配？</li>
+                  <li>是否检查时态、主谓一致、句式和标点？</li>
+                </ul>
+                <p>自查提示，不生成模拟分数。心得可写入下方复盘笔记并保存。</p>
+              </details>
             </>
           ) : (
             <>
@@ -539,9 +633,41 @@ export default function Practice({
                 <span>与原题题号对应</span>
               </div>
               <Progress value={(filled / exercise.answers.length) * 100} />
+              <nav className="answer-map" aria-label="题号导航">
+                {exercise.answers.map((_, i) => (
+                  <button
+                    key={i}
+                    className={
+                      completed
+                        ? data.results?.[i]
+                          ? "is-correct"
+                          : "is-incorrect"
+                        : data.answers[i]?.trim()
+                          ? "is-filled"
+                          : ""
+                    }
+                    aria-label={`跳转第 ${exercise.start + i} 题，${completed ? (data.results?.[i] ? "正确" : "错误") : data.answers[i]?.trim() ? "已填写" : "未填写"}`}
+                    onClick={() => {
+                      const target = document.getElementById(`answer-row-${i}`);
+                      target?.scrollIntoView({
+                        block: "center",
+                        behavior: "smooth",
+                      });
+                      target?.focus({ preventScroll: true });
+                    }}
+                  >
+                    {exercise.start + i}
+                  </button>
+                ))}
+              </nav>
               <div className="answers">
                 {exercise.answers.map((key, i) => (
-                  <div className="answer-row" key={i}>
+                  <div
+                    className="answer-row"
+                    id={`answer-row-${i}`}
+                    tabIndex={-1}
+                    key={i}
+                  >
                     <label
                       htmlFor={`a-${i}`}
                       className={

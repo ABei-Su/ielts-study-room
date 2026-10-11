@@ -10,6 +10,7 @@ import {
 import { officialSource, exercises } from "@/lib/catalog";
 import type { StudyRecord, SessionData, WordData } from "@/lib/types";
 import { useNow } from "./use-now";
+import { recentDrafts } from "@/lib/study-view.mjs";
 export default function Overview({
   records,
   navigate,
@@ -24,8 +25,8 @@ export default function Overview({
   const now = useNow();
   const sessions = records.filter((r) => r.kind === "session");
   const words = records.filter((r) => r.kind === "word");
-  const drafts = sessions.filter(
-    (r) => (r.data as SessionData).status === "draft",
+  const drafts = recentDrafts(sessions).filter((r) =>
+    exercises.some((e) => e.id === (r.data as SessionData).exerciseId),
   );
   const counts = [
     sessions.filter((r) => (r.data as SessionData).status === "submitted")
@@ -43,27 +44,11 @@ export default function Overview({
       <div className="page-heading">
         <div>
           <p className="eyebrow">IELTS ACADEMIC</p>
-          <h1>今天学什么？</h1>
+          <h1>开始今天的学习</h1>
           <p>选择专项练习，或接着上次的进度。</p>
         </div>
         <span className="pill">IELTS Academic</span>
       </div>
-      <section className="stats-grid">
-        {[
-          ["已完成练习", "次"],
-          ["写作存档", "篇"],
-          ["收藏生词", "个"],
-          ["待复习单词", "个"],
-        ].map(([label, unit], i) => (
-          <div className="stat" key={label}>
-            <p>{label}</p>
-            <strong>
-              {loading ? "—" : counts[i]}
-              <small>{unit}</small>
-            </strong>
-          </div>
-        ))}
-      </section>
       {drafts[0] && (
         <div className="continue-banner">
           <div>
@@ -82,9 +67,25 @@ export default function Overview({
           </button>
         </div>
       )}
+      <section className="stats-grid">
+        {[
+          ["已完成练习", "次"],
+          ["写作存档", "篇"],
+          ["收藏生词", "个"],
+          ["待复习单词", "个"],
+        ].map(([label, unit], i) => (
+          <div className="stat" key={label}>
+            <p>{label}</p>
+            <strong>
+              {loading ? "—" : counts[i]}
+              <small>{unit}</small>
+            </strong>
+          </div>
+        ))}
+      </section>
       <div className="section-heading">
         <h2>开始今日练习</h2>
-        <span>真实来源 · 专注练习</span>
+        <span>IELTS 官方样题</span>
       </div>
       <section className="practice-grid">
         {[
@@ -95,7 +96,7 @@ export default function Overview({
             icon: Headphones,
             desc: "听懂细节，捕捉关键信息。",
             num: "01",
-            meta: "5 组官方专项 · 配套录音",
+            meta: `${exercises.filter((e) => e.kind === "listening").length} 组官方专项 · 配套录音`,
           },
           {
             id: "reading",
@@ -104,7 +105,7 @@ export default function Overview({
             icon: BookOpen,
             desc: "带着问题，找到每一处依据。",
             num: "02",
-            meta: "5 组官方专项 · 即时核对",
+            meta: `${exercises.filter((e) => e.kind === "reading").length} 组官方专项 · 即时核对`,
           },
           {
             id: "writing",
@@ -113,7 +114,7 @@ export default function Overview({
             icon: PenLine,
             desc: "把观点，写得清晰有力。",
             num: "03",
-            meta: "5 道官方题目 · 自动存稿",
+            meta: `${exercises.filter((e) => e.kind === "writing").length} 道官方题目 · 自动存稿`,
           },
         ].map((c) => (
           <button
@@ -144,7 +145,7 @@ export default function Overview({
             <Bookmark size={26} />
           </div>
           <div>
-            <p className="eyebrow">BUILD YOUR VOCABULARY</p>
+            <p className="eyebrow">单词复习</p>
             <h2>复习你的单词</h2>
             <p>回忆释义，巩固到期生词。</p>
           </div>

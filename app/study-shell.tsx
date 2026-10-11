@@ -82,6 +82,7 @@ export default function StudyShell({
   const [view, setView] = useState("home"),
     [active, setActive] = useState<StudyRecord | null>(null),
     [wordOpen, setWordOpen] = useState(false);
+  const [onlyMistakes, setOnlyMistakes] = useState(false);
   const guard = useRef<null | (() => Promise<boolean>)>(null);
   const store = useRecords(signedIn);
   const startingRef = useRef(false);
@@ -190,7 +191,7 @@ export default function StudyShell({
           <button className="brand" onClick={() => void navigate("home")}>
             <span className="brand-symbol">i.</span>
             <span>
-              IELTS 自习室<small>YOUR PERSONAL STUDY SPACE</small>
+              IELTS 自习室<small>我的雅思学习空间</small>
             </span>
           </button>
         </SidebarHeader>
@@ -306,21 +307,22 @@ export default function StudyShell({
             <>
               <div className="page-heading">
                 <div>
-                  <p className="eyebrow">IELTS ACADEMIC / YOUR STUDY SPACE</p>
+                  <p className="eyebrow">IELTS ACADEMIC</p>
                   <h1>{nav.find((n) => n.id === view)?.label}</h1>
                   <p>
                     {view === "history"
                       ? "接续未完成的练习，回顾每一次进步。"
                       : view === "words"
-                        ? "每一个收藏的词，都有下一次相遇。"
+                        ? "整理生词、释义和例句。"
                         : view === "learn"
-                          ? "在回忆中巩固，在语境中积累。"
+                          ? "先回忆，再查看释义；按掌握程度安排复习。"
                           : "真实来源，专注练习。"}
                   </p>
                 </div>
               </div>
               {["listening", "reading", "writing"].includes(view) && (
                 <ExerciseList
+                  key={view}
                   kind={view}
                   records={store.records}
                   onStart={start}
@@ -373,6 +375,25 @@ export default function StudyShell({
                       <Download size={16} /> 导出全部记录
                     </button>
                   </div>
+                  <label className="mistake-toggle">
+                    <input
+                      type="checkbox"
+                      checked={onlyMistakes}
+                      onChange={(e) => setOnlyMistakes(e.target.checked)}
+                    />
+                    只看有错题的已完成练习
+                  </label>
+                  {onlyMistakes &&
+                    !store.records.some(
+                      (r) =>
+                        r.kind === "session" &&
+                        (r.data as SessionData).status === "submitted" &&
+                        (r.data as SessionData).results?.includes(false),
+                    ) && (
+                      <p className="library-empty">
+                        还没有需要复盘的错题记录。
+                      </p>
+                    )}
                   {store.records.filter((r) => r.kind === "session").length ===
                   0 ? (
                     <div className="empty-state">
@@ -390,6 +411,12 @@ export default function StudyShell({
                     <div className="history-list">
                       {store.records
                         .filter((r) => r.kind === "session")
+                        .filter(
+                          (r) =>
+                            !onlyMistakes ||
+                            ((r.data as SessionData).status === "submitted" &&
+                              (r.data as SessionData).results?.includes(false)),
+                        )
                         .map((r) => {
                           const s = r.data as SessionData,
                             e = exercises.find((e) => e.id === s.exerciseId);
